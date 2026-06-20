@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Montien Tech Terminal | 16-Bit Retro SSH Client</title>
+  <!-- PWA Support -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#18181b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  <!-- Self-hosted Fonts (offline-ready) -->
+  <link rel="stylesheet" href="fonts/inter/300.css">
+  <link rel="stylesheet" href="fonts/inter/400.css">
+  <link rel="stylesheet" href="fonts/inter/500.css">
+  <link rel="stylesheet" href="fonts/inter/600.css">
+  <link rel="stylesheet" href="fonts/inter/700.css">
+  <link rel="stylesheet" href="fonts/jetbrains-mono/400.css">
+  <link rel="stylesheet" href="fonts/jetbrains-mono/500.css">
+  <link rel="stylesheet" href="fonts/jetbrains-mono/600.css">
+  <link rel="stylesheet" href="fonts/prompt/300.css">
+  <link rel="stylesheet" href="fonts/prompt/400.css">
+  <link rel="stylesheet" href="fonts/prompt/500.css">
+  <link rel="stylesheet" href="fonts/prompt/600.css">
+  <link rel="stylesheet" href="fonts/prompt/700.css">
+  <link rel="stylesheet" href="fonts/prompt/thai.css">
+  <link rel="stylesheet" href="fonts/press-start-2p/400.css">
+  <link rel="stylesheet" href="fonts/silkscreen/400.css">
+  <link rel="stylesheet" href="fonts/silkscreen/700.css">
+  <!-- xterm.css (self-hosted) -->
+  <link rel="stylesheet" href="lib/xterm.css" />
+  <!-- Lucide Icons (self-hosted) -->
+  <script src="lib/lucide.min.js"></script>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <img src="assets/logo.png" alt="Montien Tech Terminal Logo" class="logo-image">
+        <h1 class="pixel-text">Montien Tech Terminal</h1>
+        <span class="badge pixel-badge">v1.0.0</span>
+      </div>
+      
+      <!-- Header Gimmick (8-bit Running Mascot) -->
+      <div class="header-gimmick state-disconnected">
+        <div class="mascot-sprite-container">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16">
+            <!-- Frame 1 -->
+            <g transform="translate(0, 0)">
+              <rect class="pixel" x="6" y="0" width="7" height="1"/>
+              <rect class="pixel" x="5" y="1" width="3" height="1"/><rect class="pixel" x="9" y="1" width="5" height="1"/>
+              <rect class="pixel" x="5" y="2" width="9" height="1"/>
+              <rect class="pixel" x="5" y="3" width="6" height="1"/>
+              <rect class="pixel" x="5" y="4" width="4" height="1"/>
+              <rect class="pixel" x="4" y="5" width="4" height="1"/>
+              <rect class="pixel" x="3" y="6" width="7" height="1"/>
+              <rect class="pixel" x="1" y="7" width="9" height="1"/>
+              <rect class="pixel" x="0" y="8" width="9" height="1"/>
+              <rect class="pixel" x="0" y="9" width="8" height="1"/>
+              <rect class="pixel" x="1" y="10" width="6" height="1"/>
+              <rect class="pixel" x="2" y="11" width="4" height="1"/>
+              <rect class="pixel" x="2" y="12" width="1" height="1"/><rect class="pixel" x="4" y="12" width="1" height="1"/>
+              <rect class="pixel" x="2" y="13" width="1" height="1"/><rect class="pixel" x="4" y="13" width="1" height="1"/>
+              <rect class="pixel" x="2" y="14" width="2" height="1"/><rect class="pixel" x="4" y="14" width="2" height="1"/>
+            </g>
+            <!-- Frame 2 -->
+            <g transform="translate(16, 0)">
+              <rect class="pixel" x="6" y="0" width="7" height="1"/>
+              <rect class="pixel" x="5" y="1" width="3" height="1"/><rect class="pixel" x="9" y="1" width="5" height="1"/>
+              <rect class="pixel" x="5" y="2" width="9" height="1"/>
+              <rect class="pixel" x="5" y="3" width="6" height="1"/>
+              <rect class="pixel" x="5" y="4" width="4" height="1"/>
+              <rect class="pixel" x="4" y="5" width="4" height="1"/>
+              <rect class="pixel" x="3" y="6" width="7" height="1"/>
+              <rect class="pixel" x="1" y="7" width="9" height="1"/>
+              <rect class="pixel" x="0" y="8" width="9" height="1"/>
+              <rect class="pixel" x="0" y="9" width="8" height="1"/>
+              <rect class="pixel" x="1" y="10" width="6" height="1"/>
+              <rect class="pixel" x="2" y="11" width="4" height="1"/>
+              <rect class="pixel" x="2" y="12" width="1" height="1"/><rect class="pixel" x="4" y="12" width="1" height="1"/>
+              <rect class="pixel" x="2" y="13" width="1" height="1"/><rect class="pixel" x="5" y="13" width="1" height="1"/>
+              <rect class="pixel" x="2" y="14" width="2" height="1"/><rect class="pixel" x="5" y="14" width="2" height="1"/>
+            </g>
+            <!-- Frame 3 -->
+            <g transform="translate(32, 0)">
+              <rect class="pixel" x="6" y="0" width="7" height="1"/>
+              <rect class="pixel" x="5" y="1" width="3" height="1"/><rect class="pixel" x="9" y="1" width="5" height="1"/>
+              <rect class="pixel" x="5" y="2" width="9" height="1"/>
+              <rect class="pixel" x="5" y="3" width="6" height="1"/>
+              <rect class="pixel" x="5" y="4" width="4" height="1"/>
+              <rect class="pixel" x="4" y="5" width="4" height="1"/>
+              <rect class="pixel" x="3" y="6" width="7" height="1"/>
+              <rect class="pixel" x="1" y="7" width="9" height="1"/>
+              <rect class="pixel" x="0" y="8" width="9" height="1"/>
+              <rect class="pixel" x="0" y="9" width="8" height="1"/>
+              <rect class="pixel" x="1" y="10" width="6" height="1"/>
+              <rect class="pixel" x="2" y="11" width="4" height="1"/>
+              <rect class="pixel" x="2" y="12" width="1" height="1"/><rect class="pixel" x="4" y="12" width="1" height="1"/>
+              <rect class="pixel" x="1" y="13" width="1" height="1"/><rect class="pixel" x="4" y="13" width="1" height="1"/>
+              <rect class="pixel" x="0" y="14" width="2" height="1"/><rect class="pixel" x="4" y="14" width="2" height="1"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="header-status">
+        <span class="status-indicator disconnected" id="connection-status-dot"></span>
+        <span id="connection-status-text" class="pixel-text-small">ไม่ได้เชื่อมต่อ</span>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-body">
+      <!-- Left Panel: Connection & Session Manager -->
+      <section class="panel connection-panel">
+        <div class="panel-header">
+          <i data-lucide="settings"></i>
+          <h2>ตั้งค่าการเชื่อมต่อ SSH</h2>
+        </div>
+        
+        <!-- Connection Form -->
+        <form id="connection-form" class="connection-form">
+          <div class="form-group">
+            <label for="ssh-host">Address (IP หรือ Hostname)</label>
+            <div class="input-wrapper">
+              <i data-lucide="server"></i>
+              <input type="text" id="ssh-host" placeholder="เช่น 192.168.1.100 หรือ server.com" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group col-8">
+              <label for="ssh-username">Username</label>
+              <div class="input-wrapper">
+                <i data-lucide="user"></i>
+                <input type="text" id="ssh-username" placeholder="เช่น root, ubuntu" required>
+              </div>
+            </div>
+            <div class="form-group col-4">
+              <label for="ssh-port">Port</label>
+              <div class="input-wrapper">
+                <input type="number" id="ssh-port" placeholder="22" value="22" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ssh-password">Password</label>
+            <div class="input-wrapper">
+              <i data-lucide="lock"></i>
+              <input type="password" id="ssh-password" placeholder="ใส่รหัสผ่านเข้าเครื่อง Linux" required>
+              <button type="button" class="btn-toggle-password" id="toggle-password">
+                <i data-lucide="eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="btn-connect">
+              <i data-lucide="play"></i>
+              <span>เชื่อมต่อ SSH</span>
+            </button>
+            <button type="button" class="btn-secondary" id="btn-save-profile" title="บันทึกโปรไฟล์นี้">
+              <i data-lucide="save"></i>
+              <span>บันทึก</span>
+            </button>
+          </div>
+        </form>
+
+        <hr class="divider">
+
+        <!-- Mascot Gimmick Selection -->
+        <div class="mascot-section">
+          <div class="section-title">
+            <i data-lucide="gamepad-2"></i>
+            <h3>ตัวละครหน้าจอ (Mascot Gimmick)</h3>
+          </div>
+          <div class="mascot-selector-wrapper">
+            <label for="mascot-select">เลือกตัวละครหลัก:</label>
+            <div class="input-wrapper">
+              <i data-lucide="smile"></i>
+              <select id="mascot-select">
+                <option value="dino" selected>🦖 ไดโนเสาร์ (Dino)</option>
+                <option value="cat">🐱 แมวไซเบอร์ (Cyber Cat)</option>
+                <option value="ghost">👻 ผีเรโทร (PacGhost)</option>
+                <option value="robot">🤖 หุ่นยนต์จิ๋ว (Tiny Robot)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Saved Profiles Manager -->
+        <div class="profiles-section">
+          <div class="section-title">
+            <i data-lucide="folder-heart"></i>
+            <h3>โปรไฟล์ที่บันทึกไว้</h3>
+          </div>
+          <div class="profiles-list" id="profiles-list">
+            <!-- Saved profiles will be inserted here dynamically -->
+            <div class="empty-profiles">ไม่มีโปรไฟล์ที่บันทึกไว้</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: macOS-Style Terminal -->
+      <section class="panel terminal-panel">
+        <div class="macbook-window">
+          <!-- macOS Window Titlebar -->
+          <div class="window-titlebar">
+            <div class="window-buttons">
+              <span class="dot close-btn" title="ปิดการเชื่อมต่อ" id="mac-close-btn"></span>
+              <span class="dot minimize-btn"></span>
+              <span class="dot maximize-btn"></span>
+            </div>
+            
+            <div class="window-title-container">
+              <i data-lucide="cpu" class="title-icon"></i>
+              <span class="window-title" id="terminal-window-title">SSH Terminal (ยังไม่ได้เชื่อมต่อ)</span>
+            </div>
+
+            <div class="window-actions">
+              <!-- Theme Picker -->
+              <div class="theme-select-wrapper">
+                <i data-lucide="palette"></i>
+                <select id="terminal-theme" title="เลือกธีมหน้าจอ">
+                  <option value="retro-green">Retro Green</option>
+                  <option value="macos-dark">macOS Dark</option>
+                  <option value="dracula" selected>Dracula (แนะนำ)</option>
+                  <option value="monokai">Monokai</option>
+                  <option value="solarized-dark">Solarized Dark</option>
+                  <option value="retro-amber">Retro Amber</option>
+                </select>
+              </div>
+
+              <!-- Copy Output -->
+              <button id="btn-copy-output" class="window-action-btn" title="คัดลอกข้อความที่เลือก">
+                <i data-lucide="copy"></i>
+              </button>
+
+              <!-- Toggle Sidebar -->
+              <button id="btn-toggle-sidebar" class="window-action-btn" title="ซ่อน/แสดง แผงควบคุมด้านข้าง">
+                <i data-lucide="panel-left"></i>
+              </button>
+
+              <!-- Clear Terminal -->
+              <button id="btn-clear-terminal" class="window-action-btn" title="ล้างหน้าจอ terminal">
+                <i data-lucide="trash-2"></i>
+              </button>
+
+              <!-- Disconnect -->
+              <button id="btn-disconnect" class="window-action-btn disconnect-btn hidden" title="ตัดการเชื่อมต่อ">
+                <i data-lucide="power"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab Bar -->
+          <div class="tab-bar" id="tab-bar">
+            <button class="btn-new-tab" id="btn-new-tab" title="เปิด Tab ใหม่">
+              <i data-lucide="plus"></i>
+            </button>
+          </div>
+
+          <!-- xterm.js Shell Container -->
+          <div class="terminal-content">
+            <div id="terminal-container"></div>
+            <!-- Notification Overlay inside Terminal -->
+            <div id="terminal-overlay" class="terminal-overlay hidden">
+              <div class="overlay-spinner"></div>
+              <p id="overlay-message">กำลังเชื่อมต่อ...</p>
+            </div>
+          </div>
+
+          <!-- Dedicated Thai / Command Input Bar -->
+          <div class="thai-command-bar">
+            <div class="command-input-container">
+              <span class="prompt-symbol">&gt;</span>
+              <input type="text" id="thai-command-input" placeholder="พิมพ์คำสั่งของคุณที่นี่ (รองรับภาษาไทย และคำสั่งของ claude/antigravity cli)..." autocomplete="off" disabled>
+              <button type="button" id="btn-send-command" class="btn-send" title="ส่งคำสั่ง (หรือกด Enter)" disabled>
+                <i data-lucide="send"></i>
+              </button>
+            </div>
+            <div class="command-bar-footer">
+              <div class="tip-text">
+                <i data-lucide="info"></i>
+                <span>พิมพ์คำสั่งแล้วกด <strong>Enter</strong> เพื่อสั่งงานผ่าน SSH. กด <strong>ลูกศร ขึ้น/ลง</strong> เพื่อดูประวัติคำสั่งล่าสุด</span>
+              </div>
+              <div class="command-bar-right">
+                <label class="auto-run-toggle" title="เปิด: Enter รันคำสั่งทันที / ปิด: Enter ส่งข้อความแล้วกด Enter อีกครั้งในหน้าจอ terminal เพื่อรัน">
+                  <input type="checkbox" id="auto-run-toggle">
+                  <span class="toggle-track"></span>
+                  <span class="toggle-label-text">Enter รันทันที</span>
+                </label>
+                <div class="encoding-status">UTF-8 Thai Support</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- xterm.js (self-hosted) -->
+  <script src="lib/xterm.js"></script>
+  <!-- xterm fit addon (self-hosted) -->
+  <script src="lib/xterm-addon-fit.js"></script>
+  <!-- App JS -->
+  <script src="app.js"></script>
+</body>
+</html>
