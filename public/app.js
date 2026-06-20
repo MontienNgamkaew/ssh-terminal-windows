@@ -143,9 +143,12 @@ function createTab() {
   // Create xterm instance
   const term = new Terminal({
     cursorBlink: true,
-    fontFamily: "'JetBrains Mono', 'Prompt', Consolas, 'Courier New', monospace",
+    // Note: We remove 'Prompt' (a proportional Thai font) from the terminal stack and replace it with
+    // monospaced alternatives that support Thai (like 'Courier New' on Windows, 'Tlwg Mono' on Linux, and 'Courier' on macOS/others).
+    // This resolves Thai character width miscalculations and cursor drift in xterm.js.
+    fontFamily: "'JetBrains Mono', Consolas, 'Courier New', 'Tlwg Mono', 'Courier', monospace",
     fontSize: 14,
-    lineHeight: 1.3,
+    lineHeight: 1.4, // Increased slightly to prevent Thai tone marks and lower vowels from being clipped
     theme: themes[themeSelect.value],
     allowProposedApi: true,
     unicodeVersion: '11'
