@@ -173,6 +173,20 @@
 
         <hr class="divider">
 
+        <!-- Saved Profiles Manager -->
+        <div class="profiles-section">
+          <div class="section-title">
+            <i data-lucide="folder-heart"></i>
+            <h3>โปรไฟล์ที่บันทึกไว้</h3>
+          </div>
+          <div class="profiles-list" id="profiles-list">
+            <!-- Saved profiles will be inserted here dynamically -->
+            <div class="empty-profiles">ไม่มีโปรไฟล์ที่บันทึกไว้</div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
         <!-- Mascot Gimmick Selection -->
         <div class="mascot-section">
           <div class="section-title">
@@ -190,20 +204,6 @@
                 <option value="robot">🤖 หุ่นยนต์จิ๋ว (Tiny Robot)</option>
               </select>
             </div>
-          </div>
-        </div>
-
-        <hr class="divider">
-
-        <!-- Saved Profiles Manager -->
-        <div class="profiles-section">
-          <div class="section-title">
-            <i data-lucide="folder-heart"></i>
-            <h3>โปรไฟล์ที่บันทึกไว้</h3>
-          </div>
-          <div class="profiles-list" id="profiles-list">
-            <!-- Saved profiles will be inserted here dynamically -->
-            <div class="empty-profiles">ไม่มีโปรไฟล์ที่บันทึกไว้</div>
           </div>
         </div>
       </section>
@@ -289,7 +289,7 @@
             <div class="command-bar-footer">
               <div class="tip-text">
                 <i data-lucide="info"></i>
-                <span>พิมพ์คำสั่งแล้วกด <strong>Enter</strong> เพื่อสั่งงานผ่าน SSH. กด <strong>ลูกศร ขึ้น/ลง</strong> เพื่อดูประวัติคำสั่งล่าสุด</span>
+                <span>พิมพ์คำสั่งแล้วกด <strong>Enter</strong> เพื่อสั่งงานผ่าน SSH. กด <strong>ลูกศร ขึ้น/ลง</strong> เพื่อดูประวัติ. <strong>Ctrl+Space</strong> สลับ focus</span>
               </div>
               <div class="command-bar-right">
                 <label class="auto-run-toggle" title="เปิด: Enter รันคำสั่งทันที / ปิด: Enter ส่งข้อความแล้วกด Enter อีกครั้งในหน้าจอ terminal เพื่อรัน">

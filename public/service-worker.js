@@ -1,4 +1,4 @@
-const CACHE_NAME = 'montien-tech-terminal-win-v1';
+const CACHE_NAME = 'montien-tech-terminal-win-v2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -52,19 +52,22 @@ self.addEventListener('fetch', (e) => {
       
       return fetch(e.request).then(response => {
         // Don't cache WebSocket or non-http requests
-        if (!response || response.status !== 200 || !e.request.url.startsWith('http')) {
+        if (!response || response.status !== 200 || response.type === 'opaque' || !e.request.url.startsWith('http')) {
           return response;
         }
-        
+
         // Cache dynamic assets on the fly
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then(cache => {
           cache.put(e.request, responseClone);
         });
-        
+
         return response;
       }).catch(() => {
-        // Offline fallback
+        return new Response('Offline — ไม่มีการเชื่อมต่ออินเทอร์เน็ต', {
+          status: 503,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
       });
     })
   );

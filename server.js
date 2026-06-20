@@ -2,7 +2,6 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const { Client } = require('ssh2');
-const { StringDecoder } = require('string_decoder');
 const path = require('path');
 
 const app = express();
@@ -11,13 +10,17 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 
-// Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+function safeSend(ws, data) {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(data);
+  }
+}
 
 wss.on('connection', (ws) => {
   let conn = null;
   let sshStream = null;
-  const decoder = new StringDecoder('utf8');
 
   console.log('Client connected to WebSocket');
 
@@ -31,19 +34,25 @@ wss.on('connection', (ws) => {
           return;
         }
 
+        const port = parseInt(msg.port);
+        if (isNaN(port) || port < 1 || port > 65535) {
+          ws.send(JSON.stringify({ type: 'error', message: 'Port ไม่ถูกต้อง (ต้องอยู่ระหว่าง 1-65535)' }));
+          return;
+        }
+
         ws.send(JSON.stringify({ type: 'status', message: 'กำลังเชื่อมต่อ SSH...', level: 'info' }));
 
         conn = new Client();
 
         conn.on('ready', () => {
-          ws.send(JSON.stringify({ type: 'status', message: 'เชื่อมต่อสำเร็จ! กำลังสร้าง Shell...', level: 'info' }));
+          safeSend(ws, JSON.stringify({ type: 'status', message: 'เชื่อมต่อสำเร็จ! กำลังสร้าง Shell...', level: 'info' }));
 
           const cols = msg.cols || 80;
           const rows = msg.rows || 24;
 
           conn.shell({ term: 'xterm-256color', cols, rows }, (err, stream) => {
             if (err) {
-              ws.send(JSON.stringify({ type: 'error', message: `ไม่สามารถเปิด Shell: ${err.message}` }));
+              safeSend(ws, JSON.stringify({ type: 'error', message: `ไม่สามารถเปิด Shell: ${err.message}` }));
               conn.end();
               conn = null;
               return;
@@ -51,40 +60,35 @@ wss.on('connection', (ws) => {
 
             sshStream = stream;
 
-            // Notify client that connection is fully established
-            ws.send(JSON.stringify({ type: 'status', message: 'เชื่อมต่อเสร็จสมบูรณ์', level: 'success' }));
+            safeSend(ws, JSON.stringify({ type: 'status', message: 'เชื่อมต่อเสร็จสมบูรณ์', level: 'success' }));
 
-            // Listen for data from SSH stream and forward to client
             sshStream.on('data', (data) => {
-              ws.send(JSON.stringify({ type: 'data', data: decoder.write(data) }));
+              safeSend(ws, JSON.stringify({ type: 'data', data: Buffer.from(data).toString('base64'), encoding: 'base64' }));
             });
 
             sshStream.on('close', () => {
-              ws.send(JSON.stringify({ type: 'status', message: 'เซสชัน Shell ถูกปิดลง', level: 'info' }));
-              ws.close();
+              safeSend(ws, JSON.stringify({ type: 'status', message: 'เซสชัน Shell ถูกปิดลง', level: 'info' }));
+              if (ws.readyState === WebSocket.OPEN) ws.close();
             });
           });
         });
 
         conn.on('error', (err) => {
           console.error('SSH Client Error:', err);
-          ws.send(JSON.stringify({ type: 'error', message: `ข้อผิดพลาด SSH: ${err.message}` }));
+          safeSend(ws, JSON.stringify({ type: 'error', message: `ข้อผิดพลาด SSH: ${err.message}` }));
         });
 
         conn.on('close', () => {
-          ws.send(JSON.stringify({ type: 'status', message: 'การเชื่อมต่อ SSH ถูกปิด', level: 'info' }));
+          safeSend(ws, JSON.stringify({ type: 'status', message: 'การเชื่อมต่อ SSH ถูกปิด', level: 'info' }));
           conn = null;
           sshStream = null;
         });
 
-        // Attempt SSH connection
         conn.connect({
           host: msg.host,
-          port: parseInt(msg.port) || 22,
+          port,
           username: msg.username,
           password: msg.password,
-          // Optional: You can add private key support here if requested in the future,
-          // but for now, simple password credentials are requested.
           keepaliveInterval: 10000,
           keepaliveCountMax: 3
         });
@@ -112,9 +116,11 @@ wss.on('connection', (ws) => {
     console.log('Client disconnected from WebSocket');
     if (sshStream) {
       sshStream.end();
+      sshStream = null;
     }
     if (conn) {
       conn.end();
+      conn = null;
     }
   });
 });

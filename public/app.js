@@ -143,11 +143,12 @@ function createTab() {
   // Create xterm instance
   const term = new Terminal({
     cursorBlink: true,
-    fontFamily: 'JetBrains Mono, Courier New, monospace',
+    fontFamily: "'JetBrains Mono', 'Prompt', Consolas, 'Courier New', monospace",
     fontSize: 14,
-    lineHeight: 1.2,
+    lineHeight: 1.3,
     theme: themes[themeSelect.value],
-    allowProposedApi: true
+    allowProposedApi: true,
+    unicodeVersion: '11'
   });
 
   const fitAddon = new FitAddon.FitAddon();
@@ -155,9 +156,9 @@ function createTab() {
   term.open(termEl);
   fitAddon.fit();
 
-  // Prevent xterm from capturing Alt+Spacebar so it can be handled globally
+  // Prevent xterm from capturing Ctrl+Spacebar so it can be handled globally
   term.attachCustomKeyEventHandler((e) => {
-    if (e.altKey && (e.code === 'Space' || e.key === ' ' || e.keyCode === 32)) {
+    if (e.ctrlKey && !e.altKey && (e.code === 'Space' || e.key === ' ' || e.keyCode === 32)) {
       return false;
     }
     return true;
@@ -283,6 +284,7 @@ function syncUIToSession(session) {
     windowTitle.textContent = 'SSH Terminal (ยังไม่ได้เชื่อมต่อ)';
     enableCommandBar(false);
     hideOverlay();
+    if (appContainer) appContainer.classList.remove('sidebar-hidden');
   }
 }
 
@@ -368,7 +370,12 @@ function doConnect(tabId) {
           }
         }
       } else if (msg.type === 'data') {
-        session.term.write(msg.data);
+        if (msg.encoding === 'base64') {
+          const bytes = Uint8Array.from(atob(msg.data), c => c.charCodeAt(0));
+          session.term.write(bytes);
+        } else {
+          session.term.write(msg.data);
+        }
         if (tabId === activeTabId) triggerGimmickActivity();
       } else if (msg.type === 'error') {
         if (tabId === activeTabId) alert(msg.message);
@@ -591,6 +598,15 @@ function getSavedProfiles() {
   try { return JSON.parse(localStorage.getItem('ssh_profiles') || '{}'); } catch (e) { return {}; }
 }
 
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function loadProfiles() {
   const profiles = getSavedProfiles();
   profilesList.innerHTML = '';
@@ -607,8 +623,8 @@ function loadProfiles() {
     card.className = 'profile-card';
     card.innerHTML = `
       <div class="profile-info">
-        <span class="profile-name">${p.name}</span>
-        <span class="profile-host">${p.username}@${p.host}:${p.port}</span>
+        <span class="profile-name">${escapeHtml(p.name)}</span>
+        <span class="profile-host">${escapeHtml(p.username)}@${escapeHtml(p.host)}:${escapeHtml(String(p.port))}</span>
       </div>
       <div class="profile-actions">
         <button class="btn-profile-action connect" title="ใช้งานโปรไฟล์นี้"><i data-lucide="arrow-right"></i></button>
@@ -698,7 +714,7 @@ thaiCommandInput.addEventListener('keydown', (e) => {
   }
 });
 
-// ─── Focus Toggle (Alt + Spacebar) ───────────────────────────────────────────
+// ─── Focus Toggle (Ctrl + Spacebar) ──────────────────────────────────────────
 let lastToggleTime = 0;
 function toggleCursorFocus() {
   const now = Date.now();
@@ -710,22 +726,20 @@ function toggleCursorFocus() {
 
   if (document.activeElement === thaiCommandInput) {
     session.term.focus();
+  } else if (!thaiCommandInput.disabled) {
+    thaiCommandInput.focus();
   } else {
-    if (!thaiCommandInput.disabled) {
-      thaiCommandInput.focus();
-    }
+    session.term.focus();
   }
 }
 
-window.addEventListener('keydown', (e) => {
-  if (e.altKey && (e.code === 'Space' || e.key === ' ' || e.keyCode === 32)) {
-    if (!thaiCommandInput.disabled) {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleCursorFocus();
-    }
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && !e.altKey && !e.shiftKey && (e.code === 'Space' || e.key === ' ' || e.keyCode === 32)) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleCursorFocus();
   }
-});
+}, true); // capture phase: fires before xterm can stopPropagation
 
 // ─── Header Gimmick Activity Control ─────────────────────────────────────────
 let gimmickTimeout = null;

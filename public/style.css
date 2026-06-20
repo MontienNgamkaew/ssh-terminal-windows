@@ -582,8 +582,7 @@ button.btn-secondary:active {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;
-  min-height: 0;
+  flex-shrink: 0;
 }
 
 .section-title {
@@ -602,8 +601,6 @@ button.btn-secondary:active {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  overflow-y: auto;
-  flex: 1;
 }
 
 .empty-profiles {
